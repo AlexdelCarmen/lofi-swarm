@@ -1,0 +1,332 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0e0e10;
+  --surface: #18181c;
+  --surface2: #22222a;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-active: rgba(255, 255, 255, 0.18);
+  --accent: #b8a4e8;
+  --accent-dim: #7a6aad;
+  --text: #e8e4f0;
+  --text-muted: #7a7688;
+  --text-dim: #4a4758;
+  --green: #7ecba0;
+  --amber: #e8c47a;
+  --coral: #e88a7a;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.app {
+  width: 100%;
+  max-width: 540px;
+}
+
+/* header */
+.header {
+  margin-bottom: 2.5rem;
+}
+.header-top {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.logo {
+  font-family: "Space Mono", monospace;
+  font-size: 22px;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.logo span {
+  color: var(--accent);
+}
+.version {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+.tagline {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* visualizer */
+.visualizer {
+  height: 56px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  margin-bottom: 2rem;
+  padding: 0 2px;
+}
+.viz-bar {
+  flex: 1;
+  background: var(--surface2);
+  border-radius: 2px 2px 0 0;
+  min-height: 3px;
+  transition:
+    height 0.08s ease,
+    background 0.2s ease;
+}
+.viz-bar.active {
+  background: var(--accent-dim);
+}
+.viz-bar.peak {
+  background: var(--accent);
+}
+
+/* chord strip */
+.chord-strip {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.chord-pill {
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--surface);
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.chord-pill.active {
+  border-color: var(--accent-dim);
+  color: var(--accent);
+  background: rgba(184, 164, 232, 0.08);
+}
+.prog-label {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+/* card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.card-title {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+/* sliders */
+.param {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.param:last-child {
+  margin-bottom: 0;
+}
+.param-name {
+  font-size: 12px;
+  color: var(--text-muted);
+  width: 72px;
+  flex-shrink: 0;
+}
+.param-val {
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  color: var(--accent);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 2px;
+  background: var(--surface2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+select {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  padding: 6px 10px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+select:focus {
+  border-color: var(--accent-dim);
+}
+
+/* status bar */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+  height: 20px;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+.status-dot.playing {
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+.status-text {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.status-time {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-left: auto;
+}
+
+/* buttons */
+.btn-row {
+  display: flex;
+  gap: 8px;
+}
+.btn-play {
+  flex: 1;
+  padding: 12px;
+  background: var(--accent);
+  color: #1a1628;
+  border: none;
+  border-radius: 8px;
+  font-family: "Space Mono", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    opacity 0.15s,
+    transform 0.1s;
+  letter-spacing: 0.04em;
+}
+.btn-play:hover {
+  opacity: 0.9;
+}
+.btn-play:active {
+  transform: scale(0.98);
+}
+.btn-play:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+}
+
+.btn-secondary {
+  padding: 12px 16px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+  letter-spacing: 0.04em;
+}
+.btn-secondary:hover {
+  border-color: var(--border-active);
+  color: var(--text);
+}
+
+/* sample note */
+.sample-note {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}
+.sample-note-title {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: var(--accent-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.sample-note-text {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.sample-note-text code {
+  font-family: "Space Mono", monospace;
+  color: var(--amber);
+  font-size: 11px;
+}

@@ -1,385 +1,128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>lo-fi generator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lo-fi generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="header">
+        <div class="header-top">
+          <span class="logo">lo<span>.</span>fi generator</span>
+          <span class="version">v0.1 — síntesis pura</span>
+        </div>
+        <p class="tagline">
+          lo-fi hip hop clásico · progresiones ii–V–I · rhodes sintetizado ·
+          swing real
+        </p>
+      </div>
 
-  :root {
-    --bg: #0e0e10;
-    --surface: #18181c;
-    --surface2: #22222a;
-    --border: rgba(255,255,255,0.07);
-    --border-active: rgba(255,255,255,0.18);
-    --accent: #b8a4e8;
-    --accent-dim: #7a6aad;
-    --text: #e8e4f0;
-    --text-muted: #7a7688;
-    --text-dim: #4a4758;
-    --green: #7ecba0;
-    --amber: #e8c47a;
-    --coral: #e88a7a;
-  }
+      <div class="visualizer" id="visualizer"></div>
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
-  }
+      <div class="prog-label" id="progLabel">progresión</div>
+      <div class="chord-strip" id="chordStrip"></div>
 
-  .app {
-    width: 100%;
-    max-width: 540px;
-  }
+      <div class="card">
+        <p class="card-title">parámetros</p>
 
-  /* header */
-  .header {
-    margin-bottom: 2.5rem;
-  }
-  .header-top {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 4px;
-  }
-  .logo {
-    font-family: 'Space Mono', monospace;
-    font-size: 22px;
-    color: var(--text);
-    letter-spacing: -0.5px;
-  }
-  .logo span { color: var(--accent); }
-  .version {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-  }
-  .tagline {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
+        <div class="param">
+          <span class="param-name">tonalidad</span>
+          <select id="keySelect">
+            <option value="C">C minor</option>
+            <option value="D">D minor</option>
+            <option value="Eb" selected>Eb minor</option>
+            <option value="F">F minor</option>
+            <option value="G">G minor</option>
+            <option value="A">A minor</option>
+            <option value="Bb">Bb minor</option>
+          </select>
+        </div>
 
-  /* visualizer */
-  .visualizer {
-    height: 56px;
-    display: flex;
-    align-items: flex-end;
-    gap: 2px;
-    margin-bottom: 2rem;
-    padding: 0 2px;
-  }
-  .viz-bar {
-    flex: 1;
-    background: var(--surface2);
-    border-radius: 2px 2px 0 0;
-    min-height: 3px;
-    transition: height 0.08s ease, background 0.2s ease;
-  }
-  .viz-bar.active { background: var(--accent-dim); }
-  .viz-bar.peak { background: var(--accent); }
+        <div class="param">
+          <span class="param-name">tempo</span>
+          <input
+            type="range"
+            id="tempoSlider"
+            min="72"
+            max="90"
+            value="80"
+            step="1"
+          />
+          <span class="param-val" id="tempoVal">80</span>
+        </div>
 
-  /* chord strip */
-  .chord-strip {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-  }
-  .chord-pill {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    padding: 5px 12px;
-    border-radius: 99px;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    background: var(--surface);
-    transition: all 0.15s;
-    letter-spacing: 0.03em;
-  }
-  .chord-pill.active {
-    border-color: var(--accent-dim);
-    color: var(--accent);
-    background: rgba(184,164,232,0.08);
-  }
-  .prog-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: 0.06em;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-  }
+        <div class="param">
+          <span class="param-name">swing</span>
+          <input
+            type="range"
+            id="swingSlider"
+            min="0"
+            max="65"
+            value="38"
+            step="1"
+          />
+          <span class="param-val" id="swingVal">38</span>
+        </div>
 
-  /* card */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.25rem 1.25rem;
-    margin-bottom: 1rem;
-  }
-  .card-title {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
+        <div class="param">
+          <span class="param-name">saturación</span>
+          <input
+            type="range"
+            id="satSlider"
+            min="0"
+            max="100"
+            value="45"
+            step="1"
+          />
+          <span class="param-val" id="satVal">45</span>
+        </div>
 
-  /* sliders */
-  .param {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-  }
-  .param:last-child { margin-bottom: 0; }
-  .param-name {
-    font-size: 12px;
-    color: var(--text-muted);
-    width: 72px;
-    flex-shrink: 0;
-  }
-  .param-val {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    color: var(--accent);
-    width: 32px;
-    text-align: right;
-    flex-shrink: 0;
-  }
+        <div class="param">
+          <span class="param-name">vinyl</span>
+          <input
+            type="range"
+            id="vinylSlider"
+            min="0"
+            max="100"
+            value="40"
+            step="1"
+          />
+          <span class="param-val" id="vinylVal">40</span>
+        </div>
 
-  input[type=range] {
-    -webkit-appearance: none;
-    appearance: none;
-    flex: 1;
-    height: 2px;
-    background: var(--surface2);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: none;
-    cursor: pointer;
-    transition: transform 0.1s;
-  }
-  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        <div class="param">
+          <span class="param-name">reverb</span>
+          <input
+            type="range"
+            id="reverbSlider"
+            min="0"
+            max="100"
+            value="35"
+            step="1"
+          />
+          <span class="param-val" id="reverbVal">35</span>
+        </div>
+      </div>
 
-  select {
-    flex: 1;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    padding: 6px 10px;
-    outline: none;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-  }
-  select:focus { border-color: var(--accent-dim); }
+      <div class="status-bar">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">listo</span>
+        <span class="status-time" id="statusTime"></span>
+      </div>
 
-  /* status bar */
-  .status-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 1rem;
-    height: 20px;
-  }
-  .status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text-dim);
-    flex-shrink: 0;
-    transition: background 0.3s;
-  }
-  .status-dot.playing {
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
-    animation: pulse 1.2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  .status-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-  .status-time {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-left: auto;
-  }
+      <div class="btn-row">
+        <button class="btn-play" id="playBtn">▶ PLAY</button>
+        <button class="btn-secondary" id="shuffleBtn">⟳ random</button>
+      </div>
 
-  /* buttons */
-  .btn-row {
-    display: flex;
-    gap: 8px;
-  }
-  .btn-play {
-    flex: 1;
-    padding: 12px;
-    background: var(--accent);
-    color: #1a1628;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
-    letter-spacing: 0.04em;
-  }
-  .btn-play:hover { opacity: 0.9; }
-  .btn-play:active { transform: scale(0.98); }
-  .btn-play:disabled { opacity: 0.35; cursor: default; transform: none; }
-
-  .btn-secondary {
-    padding: 12px 16px;
-    background: transparent;
-    color: var(--text-muted);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
-    letter-spacing: 0.04em;
-  }
-  .btn-secondary:hover {
-    border-color: var(--border-active);
-    color: var(--text);
-  }
-
-  /* sample note */
-  .sample-note {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    border: 1px dashed var(--border);
-    border-radius: 8px;
-  }
-  .sample-note-title {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--accent-dim);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .sample-note-text {
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 1.6;
-  }
-  .sample-note-text code {
-    font-family: 'Space Mono', monospace;
-    color: var(--amber);
-    font-size: 11px;
-  }
-</style>
-</head>
-<body>
-
-<div class="app">
-
-  <div class="header">
-    <div class="header-top">
-      <span class="logo">lo<span>.</span>fi generator</span>
-      <span class="version">v0.1 — síntesis pura</span>
-    </div>
-    <p class="tagline">lo-fi hip hop clásico · progresiones ii–V–I · rhodes sintetizado · swing real</p>
-  </div>
-
-  <div class="visualizer" id="visualizer"></div>
-
-  <div class="prog-label" id="progLabel">progresión</div>
-  <div class="chord-strip" id="chordStrip"></div>
-
-  <div class="card">
-    <p class="card-title">parámetros</p>
-
-    <div class="param">
-      <span class="param-name">tonalidad</span>
-      <select id="keySelect">
-        <option value="C">C minor</option>
-        <option value="D">D minor</option>
-        <option value="Eb" selected>Eb minor</option>
-        <option value="F">F minor</option>
-        <option value="G">G minor</option>
-        <option value="A">A minor</option>
-        <option value="Bb">Bb minor</option>
-      </select>
-    </div>
-
-    <div class="param">
-      <span class="param-name">tempo</span>
-      <input type="range" id="tempoSlider" min="72" max="90" value="80" step="1">
-      <span class="param-val" id="tempoVal">80</span>
-    </div>
-
-    <div class="param">
-      <span class="param-name">swing</span>
-      <input type="range" id="swingSlider" min="0" max="65" value="38" step="1">
-      <span class="param-val" id="swingVal">38</span>
-    </div>
-
-    <div class="param">
-      <span class="param-name">saturación</span>
-      <input type="range" id="satSlider" min="0" max="100" value="45" step="1">
-      <span class="param-val" id="satVal">45</span>
-    </div>
-
-    <div class="param">
-      <span class="param-name">vinyl</span>
-      <input type="range" id="vinylSlider" min="0" max="100" value="40" step="1">
-      <span class="param-val" id="vinylVal">40</span>
-    </div>
-
-    <div class="param">
-      <span class="param-name">reverb</span>
-      <input type="range" id="reverbSlider" min="0" max="100" value="35" step="1">
-      <span class="param-val" id="reverbVal">35</span>
-    </div>
-  </div>
-
-  <div class="status-bar">
-    <div class="status-dot" id="statusDot"></div>
-    <span class="status-text" id="statusText">listo</span>
-    <span class="status-time" id="statusTime"></span>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn-play" id="playBtn">▶ PLAY</button>
-    <button class="btn-secondary" id="shuffleBtn">⟳ random</button>
-  </div>
-
-  <!--
+      <!--
     ─────────────────────────────────────────────────────
     ZONA DE SAMPLES — próxima fase
     Para agregar un sample real de drums de Looperman:
@@ -396,483 +139,622 @@
     ─────────────────────────────────────────────────────
   -->
 
-  <div class="sample-note">
-    <p class="sample-note-title">// próxima fase — samples reales</p>
-    <p class="sample-note-text">
-      Cuando quieras cambiar la batería sintetizada por un sample real de
-      <code>looperman.com</code>, solo cambiás el <code>DrumSynth</code>
-      por un <code>Tone.Player("./samples/drum.wav")</code>.
-      La arquitectura ya está lista para eso.
-    </p>
-  </div>
+      <div class="sample-note">
+        <p class="sample-note-title">// próxima fase — samples reales</p>
+        <p class="sample-note-text">
+          Cuando quieras cambiar la batería sintetizada por un sample real de
+          <code>looperman.com</code>, solo cambiás el <code>DrumSynth</code> por
+          un <code>Tone.Player("./samples/drum.wav")</code>. La arquitectura ya
+          está lista para eso.
+        </p>
+      </div>
+    </div>
 
-</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <script>
+      // ─────────────────────────────────────────────────────
+      // TEORÍA MUSICAL
+      // ─────────────────────────────────────────────────────
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-<script>
-// ─────────────────────────────────────────────────────
-// TEORÍA MUSICAL
-// ─────────────────────────────────────────────────────
+      const CHROMATIC = [
+        "C",
+        "C#",
+        "D",
+        "Eb",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "Ab",
+        "A",
+        "Bb",
+        "B",
+      ];
+      const NOTE_MIDI = {
+        C: 0,
+        "C#": 1,
+        D: 2,
+        Eb: 3,
+        E: 4,
+        F: 5,
+        "F#": 6,
+        G: 7,
+        Ab: 8,
+        A: 9,
+        Bb: 10,
+        B: 11,
+      };
 
-const CHROMATIC = ['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
-const NOTE_MIDI  = {C:0,'C#':1,D:2,Eb:3,E:4,F:5,'F#':6,G:7,Ab:8,A:9,Bb:10,B:11};
+      function midiToNoteName(midi) {
+        return CHROMATIC[((midi % 12) + 12) % 12] + Math.floor(midi / 12);
+      }
+      function rootMidi(name) {
+        return NOTE_MIDI[name] + 60;
+      }
 
-function midiToNoteName(midi) {
-  return CHROMATIC[((midi % 12) + 12) % 12] + Math.floor(midi / 12);
-}
-function rootMidi(name) { return NOTE_MIDI[name] + 60; }
+      // Tipos de acorde (intervalos desde la raíz)
+      const CHORD = {
+        m7: [0, 3, 7, 10],
+        maj7: [0, 4, 7, 11],
+        dom7: [0, 4, 7, 10],
+        m7b5: [0, 3, 6, 10],
+      };
 
-// Tipos de acorde (intervalos desde la raíz)
-const CHORD = {
-  m7:    [0, 3, 7, 10],
-  maj7:  [0, 4, 7, 11],
-  dom7:  [0, 4, 7, 10],
-  m7b5:  [0, 3, 6, 10],
-};
+      // Progresiones clásicas del lo-fi hip hop
+      const PROGRESSIONS = [
+        {
+          name: "ii – V – I – VI",
+          degrees: [2, 7, 0, 9],
+          types: ["m7", "dom7", "maj7", "m7"],
+        },
+        {
+          name: "i – VII – VI – VII",
+          degrees: [0, 10, 8, 10],
+          types: ["m7", "maj7", "maj7", "dom7"],
+        },
+        {
+          name: "i – VI – III – VII",
+          degrees: [0, 9, 3, 10],
+          types: ["m7", "maj7", "m7", "dom7"],
+        },
+        {
+          name: "i – iv – VII – III",
+          degrees: [0, 5, 10, 3],
+          types: ["m7", "m7", "dom7", "maj7"],
+        },
+        {
+          name: "i – VI – i – V",
+          degrees: [0, 9, 0, 7],
+          types: ["m7", "maj7", "m7", "dom7"],
+        },
+      ];
 
-// Progresiones clásicas del lo-fi hip hop
-const PROGRESSIONS = [
-  { name: 'ii – V – I – VI',       degrees: [2, 7, 0, 9],  types: ['m7','dom7','maj7','m7']  },
-  { name: 'i – VII – VI – VII',    degrees: [0,10, 8, 10], types: ['m7','maj7','maj7','dom7'] },
-  { name: 'i – VI – III – VII',    degrees: [0, 9, 3, 10], types: ['m7','maj7','m7','dom7']  },
-  { name: 'i – iv – VII – III',    degrees: [0, 5,10,  3], types: ['m7','m7','dom7','maj7']  },
-  { name: 'i – VI – i – V',        degrees: [0, 9, 0,  7], types: ['m7','maj7','m7','dom7']  },
-];
+      // Escala menor natural (offsets desde raíz)
+      const MINOR_SCALE = [0, 2, 3, 5, 7, 8, 10];
+      // Pentatónica menor (para melodía — más "cantable")
+      const PENTA_MINOR = [0, 3, 5, 7, 10];
 
-// Escala menor natural (offsets desde raíz)
-const MINOR_SCALE = [0, 2, 3, 5, 7, 8, 10];
-// Pentatónica menor (para melodía — más "cantable")
-const PENTA_MINOR = [0, 3, 5, 7, 10];
+      function buildChords(keyName, progIdx) {
+        const prog = PROGRESSIONS[progIdx];
+        const base = rootMidi(keyName);
+        return prog.degrees.map((deg, i) => {
+          const midi = base + deg;
+          return {
+            midi,
+            type: prog.types[i],
+            name: CHROMATIC[((midi % 12) + 12) % 12] + prog.types[i],
+          };
+        });
+      }
 
-function buildChords(keyName, progIdx) {
-  const prog = PROGRESSIONS[progIdx];
-  const base = rootMidi(keyName);
-  return prog.degrees.map((deg, i) => {
-    const midi = base + deg;
-    return {
-      midi,
-      type: prog.types[i],
-      name: CHROMATIC[((midi % 12) + 12) % 12] + prog.types[i],
-    };
-  });
-}
+      // ─────────────────────────────────────────────────────
+      // ESTADO
+      // ─────────────────────────────────────────────────────
 
-// ─────────────────────────────────────────────────────
-// ESTADO
-// ─────────────────────────────────────────────────────
+      const state = {
+        key: "Eb",
+        tempo: 80,
+        swing: 38,
+        sat: 45,
+        vinyl: 40,
+        reverb: 35,
+        progIdx: 0,
+        chords: [],
+        playing: false,
+        startTime: 0,
+      };
 
-const state = {
-  key: 'Eb',
-  tempo: 80,
-  swing: 38,
-  sat: 45,
-  vinyl: 40,
-  reverb: 35,
-  progIdx: 0,
-  chords: [],
-  playing: false,
-  startTime: 0,
-};
+      // ─────────────────────────────────────────────────────
+      // UI HELPERS
+      // ─────────────────────────────────────────────────────
 
-// ─────────────────────────────────────────────────────
-// UI HELPERS
-// ─────────────────────────────────────────────────────
+      function initVisualizer() {
+        const el = document.getElementById("visualizer");
+        el.innerHTML = Array.from(
+          { length: 32 },
+          () => '<div class="viz-bar"></div>',
+        ).join("");
+      }
 
-function initVisualizer() {
-  const el = document.getElementById('visualizer');
-  el.innerHTML = Array.from({length: 32}, () =>
-    '<div class="viz-bar"></div>'
-  ).join('');
-}
+      function updateViz(heights) {
+        const bars = document.querySelectorAll(".viz-bar");
+        bars.forEach((b, i) => {
+          const h = heights[i] || 3;
+          b.style.height = h + "px";
+          b.className =
+            "viz-bar" + (h > 35 ? " peak" : h > 18 ? " active" : "");
+        });
+      }
 
-function updateViz(heights) {
-  const bars = document.querySelectorAll('.viz-bar');
-  bars.forEach((b, i) => {
-    const h = heights[i] || 3;
-    b.style.height = h + 'px';
-    b.className = 'viz-bar' + (h > 35 ? ' peak' : h > 18 ? ' active' : '');
-  });
-}
+      function resetViz() {
+        const bars = document.querySelectorAll(".viz-bar");
+        bars.forEach((b) => {
+          b.style.height = "3px";
+          b.className = "viz-bar";
+        });
+      }
 
-function resetViz() {
-  const bars = document.querySelectorAll('.viz-bar');
-  bars.forEach(b => {
-    b.style.height = '3px';
-    b.className = 'viz-bar';
-  });
-}
+      function updateChordDisplay(activeIdx) {
+        const strip = document.getElementById("chordStrip");
+        strip.innerHTML = state.chords
+          .map(
+            (c, i) =>
+              `<span class="chord-pill${i === activeIdx ? " active" : ""}">${c.name}</span>`,
+          )
+          .join("");
+        document.getElementById("progLabel").textContent =
+          PROGRESSIONS[state.progIdx].name;
+      }
 
-function updateChordDisplay(activeIdx) {
-  const strip = document.getElementById('chordStrip');
-  strip.innerHTML = state.chords.map((c, i) =>
-    `<span class="chord-pill${i === activeIdx ? ' active' : ''}">${c.name}</span>`
-  ).join('');
-  document.getElementById('progLabel').textContent =
-    PROGRESSIONS[state.progIdx].name;
-}
+      function setStatus(text, playing, timeStr) {
+        document.getElementById("statusText").textContent = text;
+        document.getElementById("statusDot").className =
+          "status-dot" + (playing ? " playing" : "");
+        document.getElementById("statusTime").textContent = timeStr || "";
+      }
 
-function setStatus(text, playing, timeStr) {
-  document.getElementById('statusText').textContent = text;
-  document.getElementById('statusDot').className = 'status-dot' + (playing ? ' playing' : '');
-  document.getElementById('statusTime').textContent = timeStr || '';
-}
+      // ─────────────────────────────────────────────────────
+      // GENERADOR DE MELODÍA — frases con pregunta/respuesta
+      // ─────────────────────────────────────────────────────
 
-// ─────────────────────────────────────────────────────
-// GENERADOR DE MELODÍA — frases con pregunta/respuesta
-// ─────────────────────────────────────────────────────
+      function generateMelodyPhrase(keyName, chordMidi, length) {
+        // Construye frase melódica de `length` notas sobre la escala pentatónica
+        // con dirección: primero sube (pregunta), luego baja (respuesta)
+        const base = rootMidi(keyName);
+        const notes = [];
+        const octaves = [0, 12]; // dos octavas disponibles
 
-function generateMelodyPhrase(keyName, chordMidi, length) {
-  // Construye frase melódica de `length` notas sobre la escala pentatónica
-  // con dirección: primero sube (pregunta), luego baja (respuesta)
-  const base = rootMidi(keyName);
-  const notes = [];
-  const octaves = [0, 12]; // dos octavas disponibles
+        // Notas disponibles: pentatónica en 2 octavas
+        const pool = [];
+        for (const oct of octaves) {
+          for (const offset of PENTA_MINOR) {
+            pool.push(base + offset + oct);
+          }
+        }
+        pool.sort((a, b) => a - b);
 
-  // Notas disponibles: pentatónica en 2 octavas
-  const pool = [];
-  for (const oct of octaves) {
-    for (const offset of PENTA_MINOR) {
-      pool.push(base + offset + oct);
-    }
-  }
-  pool.sort((a, b) => a - b);
+        // Empezamos desde un punto medio
+        let pos =
+          Math.floor(pool.length / 2) + Math.floor(Math.random() * 3) - 1;
+        pos = Math.max(0, Math.min(pool.length - 1, pos));
 
-  // Empezamos desde un punto medio
-  let pos = Math.floor(pool.length / 2) + Math.floor(Math.random() * 3) - 1;
-  pos = Math.max(0, Math.min(pool.length - 1, pos));
+        // Dirección: sube en primera mitad, baja en segunda
+        for (let i = 0; i < length; i++) {
+          // Silencio aleatorio (30% de probabilidad — le da "aire" a la melodía)
+          if (Math.random() < 0.28) {
+            notes.push(null);
+            continue;
+          }
+          notes.push(midiToNoteName(pool[pos] + 12)); // +12 = una octava arriba del rhodes
+          const half = length / 2;
+          if (i < half) {
+            pos += Math.random() < 0.7 ? 1 : -1; // tiende a subir
+          } else {
+            pos += Math.random() < 0.7 ? -1 : 1; // tiende a bajar
+          }
+          pos = Math.max(0, Math.min(pool.length - 1, pos));
+        }
+        return notes;
+      }
 
-  // Dirección: sube en primera mitad, baja en segunda
-  for (let i = 0; i < length; i++) {
-    // Silencio aleatorio (30% de probabilidad — le da "aire" a la melodía)
-    if (Math.random() < 0.28) {
-      notes.push(null);
-      continue;
-    }
-    notes.push(midiToNoteName(pool[pos] + 12)); // +12 = una octava arriba del rhodes
-    const half = length / 2;
-    if (i < half) {
-      pos += Math.random() < 0.7 ? 1 : -1; // tiende a subir
-    } else {
-      pos += Math.random() < 0.7 ? -1 : 1; // tiende a bajar
-    }
-    pos = Math.max(0, Math.min(pool.length - 1, pos));
-  }
-  return notes;
-}
+      // ─────────────────────────────────────────────────────
+      // AUDIO ENGINE
+      // ─────────────────────────────────────────────────────
 
-// ─────────────────────────────────────────────────────
-// AUDIO ENGINE
-// ─────────────────────────────────────────────────────
+      let audioNodes = [];
+      let mainSeq = null;
+      let timerInterval = null;
 
-let audioNodes = [];
-let mainSeq = null;
-let timerInterval = null;
+      async function stopAll() {
+        Tone.Transport.stop();
+        Tone.Transport.cancel();
+        if (mainSeq) {
+          try {
+            mainSeq.stop();
+            mainSeq.dispose();
+          } catch (e) {}
+          mainSeq = null;
+        }
+        clearInterval(timerInterval);
+        for (const n of audioNodes) {
+          try {
+            n.stop();
+            n.dispose();
+          } catch (e) {}
+        }
+        audioNodes = [];
+        state.playing = false;
+        document.getElementById("playBtn").textContent = "▶ PLAY";
+        document.getElementById("playBtn").disabled = false;
+        setStatus("listo", false);
+        resetViz();
+        updateChordDisplay(-1);
+      }
 
-async function stopAll() {
-  Tone.Transport.stop();
-  Tone.Transport.cancel();
-  if (mainSeq) { try { mainSeq.stop(); mainSeq.dispose(); } catch(e){} mainSeq = null; }
-  clearInterval(timerInterval);
-  for (const n of audioNodes) { try { n.stop(); n.dispose(); } catch(e){} }
-  audioNodes = [];
-  state.playing = false;
-  document.getElementById('playBtn').textContent = '▶ PLAY';
-  document.getElementById('playBtn').disabled = false;
-  setStatus('listo', false);
-  resetViz();
-  updateChordDisplay(-1);
-}
+      async function startPlay() {
+        await Tone.start();
+        await stopAll();
 
-async function startPlay() {
-  await Tone.start();
-  await stopAll();
+        state.chords = buildChords(state.key, state.progIdx);
+        updateChordDisplay(-1);
+        Tone.Transport.bpm.value = state.tempo;
 
-  state.chords = buildChords(state.key, state.progIdx);
-  updateChordDisplay(-1);
-  Tone.Transport.bpm.value = state.tempo;
+        // ── CADENA DE EFECTOS MASTER ──────────────────────
+        // tape saturation: waveshaper suave que "calienta" el audio
+        const satAmt = state.sat / 100;
+        const waveShaper = new Tone.Chebyshev(
+          Math.round(1 + satAmt * 4),
+        ).toDestination();
 
-  // ── CADENA DE EFECTOS MASTER ──────────────────────
-  // tape saturation: waveshaper suave que "calienta" el audio
-  const satAmt = state.sat / 100;
-  const waveShaper = new Tone.Chebyshev(Math.round(1 + satAmt * 4)).toDestination();
+        // reverb con decay según slider
+        const reverbWet = state.reverb / 100;
+        const reverb = new Tone.Reverb({
+          decay: 1.5 + reverbWet * 3,
+          wet: reverbWet * 0.6,
+        });
+        await reverb.ready;
+        reverb.connect(waveShaper);
 
-  // reverb con decay según slider
-  const reverbWet = state.reverb / 100;
-  const reverb = new Tone.Reverb({ decay: 1.5 + reverbWet * 3, wet: reverbWet * 0.6 });
-  await reverb.ready;
-  reverb.connect(waveShaper);
+        // low-pass filter — recorta las frecuencias altas (efecto cassette)
+        const lpf = new Tone.Filter(2800 - satAmt * 800, "lowpass").connect(
+          reverb,
+        );
 
-  // low-pass filter — recorta las frecuencias altas (efecto cassette)
-  const lpf = new Tone.Filter(2800 - satAmt * 800, 'lowpass').connect(reverb);
+        // chorus suave — el "temblor" del Rhodes
+        const chorus = new Tone.Chorus(3.5, 2.5, 0.25).connect(lpf).start();
 
-  // chorus suave — el "temblor" del Rhodes
-  const chorus = new Tone.Chorus(3.5, 2.5, 0.25).connect(lpf).start();
+        audioNodes.push(waveShaper, reverb, lpf, chorus);
 
-  audioNodes.push(waveShaper, reverb, lpf, chorus);
+        // ── RHODES (piano) ───────────────────────────────
+        // oscillator triangle + FM leve = textura de rhodes
+        const rhodes = new Tone.PolySynth(Tone.FMSynth, {
+          harmonicity: 3.5,
+          modulationIndex: 8,
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.02, decay: 0.4, sustain: 0.45, release: 1.8 },
+          modulation: { type: "sine" },
+          modulationEnvelope: {
+            attack: 0.01,
+            decay: 0.3,
+            sustain: 0.1,
+            release: 0.5,
+          },
+          volume: -10,
+        }).connect(chorus);
+        audioNodes.push(rhodes);
 
-  // ── RHODES (piano) ───────────────────────────────
-  // oscillator triangle + FM leve = textura de rhodes
-  const rhodes = new Tone.PolySynth(Tone.FMSynth, {
-    harmonicity: 3.5,
-    modulationIndex: 8,
-    oscillator: { type: 'triangle' },
-    envelope: { attack: 0.02, decay: 0.4, sustain: 0.45, release: 1.8 },
-    modulation: { type: 'sine' },
-    modulationEnvelope: { attack: 0.01, decay: 0.3, sustain: 0.1, release: 0.5 },
-    volume: -10,
-  }).connect(chorus);
-  audioNodes.push(rhodes);
+        // ── MELODÍA ──────────────────────────────────────
+        const melSynth = new Tone.Synth({
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.015, decay: 0.25, sustain: 0.3, release: 1.2 },
+          volume: -16,
+        }).connect(chorus);
+        audioNodes.push(melSynth);
 
-  // ── MELODÍA ──────────────────────────────────────
-  const melSynth = new Tone.Synth({
-    oscillator: { type: 'triangle' },
-    envelope: { attack: 0.015, decay: 0.25, sustain: 0.3, release: 1.2 },
-    volume: -16,
-  }).connect(chorus);
-  audioNodes.push(melSynth);
+        // ── BAJO ─────────────────────────────────────────
+        const bassLpf = new Tone.Filter(500, "lowpass").connect(waveShaper);
+        const bass = new Tone.Synth({
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.025, decay: 0.6, sustain: 0.15, release: 0.9 },
+          volume: -12,
+        }).connect(bassLpf);
+        audioNodes.push(bassLpf, bass);
 
-  // ── BAJO ─────────────────────────────────────────
-  const bassLpf = new Tone.Filter(500, 'lowpass').connect(waveShaper);
-  const bass = new Tone.Synth({
-    oscillator: { type: 'sine' },
-    envelope: { attack: 0.025, decay: 0.6, sustain: 0.15, release: 0.9 },
-    volume: -12,
-  }).connect(bassLpf);
-  audioNodes.push(bassLpf, bass);
+        // ── DRUMS ─────────────────────────────────────────
+        // kick
+        const kick = new Tone.MembraneSynth({
+          pitchDecay: 0.045,
+          octaves: 5,
+          envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 },
+          volume: -13,
+        }).toDestination();
 
-  // ── DRUMS ─────────────────────────────────────────
-  // kick
-  const kick = new Tone.MembraneSynth({
-    pitchDecay: 0.045, octaves: 5,
-    envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 },
-    volume: -13,
-  }).toDestination();
+        // snare (noise + tono)
+        const snare = new Tone.NoiseSynth({
+          noise: { type: "white" },
+          envelope: { attack: 0.001, decay: 0.13, sustain: 0, release: 0.06 },
+          volume: -18,
+        }).toDestination();
 
-  // snare (noise + tono)
-  const snare = new Tone.NoiseSynth({
-    noise: { type: 'white' },
-    envelope: { attack: 0.001, decay: 0.13, sustain: 0, release: 0.06 },
-    volume: -18,
-  }).toDestination();
+        // hi-hat
+        const hihat = new Tone.MetalSynth({
+          frequency: 380,
+          harmonicity: 5.1,
+          modulationIndex: 32,
+          resonance: 4000,
+          octaves: 1.5,
+          envelope: { attack: 0.001, decay: 0.045, release: 0.01 },
+          volume: -22,
+        }).toDestination();
 
-  // hi-hat
-  const hihat = new Tone.MetalSynth({
-    frequency: 380, harmonicity: 5.1, modulationIndex: 32,
-    resonance: 4000, octaves: 1.5,
-    envelope: { attack: 0.001, decay: 0.045, release: 0.01 },
-    volume: -22,
-  }).toDestination();
+        // hi-hat abierto (ocasional — cada 8 beats)
+        const openHat = new Tone.MetalSynth({
+          frequency: 380,
+          harmonicity: 5.1,
+          modulationIndex: 32,
+          resonance: 4000,
+          octaves: 1.5,
+          envelope: { attack: 0.001, decay: 0.18, release: 0.06 },
+          volume: -25,
+        }).toDestination();
 
-  // hi-hat abierto (ocasional — cada 8 beats)
-  const openHat = new Tone.MetalSynth({
-    frequency: 380, harmonicity: 5.1, modulationIndex: 32,
-    resonance: 4000, octaves: 1.5,
-    envelope: { attack: 0.001, decay: 0.18, release: 0.06 },
-    volume: -25,
-  }).toDestination();
+        audioNodes.push(kick, snare, hihat, openHat);
 
-  audioNodes.push(kick, snare, hihat, openHat);
+        // ── VINYL CRACKLE ─────────────────────────────────
+        const vinylVol = -50 + (state.vinyl / 100) * 28;
+        const vinylFilter = new Tone.Filter(1000, "lowpass").toDestination();
+        const vinyl = new Tone.Noise({
+          type: "pink",
+          volume: vinylVol,
+        }).connect(vinylFilter);
+        vinyl.start();
+        audioNodes.push(vinylFilter, vinyl);
 
-  // ── VINYL CRACKLE ─────────────────────────────────
-  const vinylVol = -50 + (state.vinyl / 100) * 28;
-  const vinylFilter = new Tone.Filter(1000, 'lowpass').toDestination();
-  const vinyl = new Tone.Noise({ type: 'pink', volume: vinylVol }).connect(vinylFilter);
-  vinyl.start();
-  audioNodes.push(vinylFilter, vinyl);
+        // ── SECUENCIADOR ──────────────────────────────────
+        const swingAmt = state.swing / 100;
+        const beatsPerChord = 4;
+        const totalBeats = beatsPerChord * state.chords.length; // 16 beats = 4 compases
+        const totalSteps = totalBeats * 2; // en corcheas
 
-  // ── SECUENCIADOR ──────────────────────────────────
-  const swingAmt = state.swing / 100;
-  const beatsPerChord = 4;
-  const totalBeats = beatsPerChord * state.chords.length; // 16 beats = 4 compases
-  const totalSteps  = totalBeats * 2; // en corcheas
+        // Genera frases melódicas para todo el loop
+        const melPhrases = state.chords.map((c) =>
+          generateMelodyPhrase(state.key, c.midi, beatsPerChord * 2),
+        );
 
-  // Genera frases melódicas para todo el loop
-  const melPhrases = state.chords.map(c =>
-    generateMelodyPhrase(state.key, c.midi, beatsPerChord * 2)
-  );
+        let stepCount = 0;
+        let activeChordIdx = -1;
 
-  let stepCount = 0;
-  let activeChordIdx = -1;
+        mainSeq = new Tone.Sequence(
+          (time, step) => {
+            const beat = step % totalBeats;
+            const chordIdx = Math.floor(beat / beatsPerChord);
+            const beatLocal = beat % beatsPerChord;
+            const isOdd = step % 2 === 1;
+            const swingOffset = isOdd
+              ? swingAmt * Tone.Time("8n").toSeconds() * 0.55
+              : 0;
 
-  mainSeq = new Tone.Sequence((time, step) => {
-    const beat      = step % totalBeats;
-    const chordIdx  = Math.floor(beat / beatsPerChord);
-    const beatLocal = beat % beatsPerChord;
-    const isOdd     = step % 2 === 1;
-    const swingOffset = isOdd ? swingAmt * Tone.Time('8n').toSeconds() * 0.55 : 0;
+            // ── actualizar display de acordes ──
+            if (chordIdx !== activeChordIdx) {
+              activeChordIdx = chordIdx;
+              Tone.getDraw().schedule(
+                () => updateChordDisplay(activeChordIdx),
+                time,
+              );
+            }
 
-    // ── actualizar display de acordes ──
-    if (chordIdx !== activeChordIdx) {
-      activeChordIdx = chordIdx;
-      Tone.getDraw().schedule(() => updateChordDisplay(activeChordIdx), time);
-    }
+            const chord = state.chords[chordIdx];
 
-    const chord = state.chords[chordIdx];
+            // ── ACORDES (piano) — en beats pares del compás ──
+            if (!isOdd && beatLocal === 0) {
+              const voicing = CHORD[chord.type].map((interval, vi) => {
+                const oct = 4 + Math.floor(vi / 3);
+                return (
+                  CHROMATIC[(((chord.midi + interval) % 12) + 12) % 12] + oct
+                );
+              });
+              const vel = 0.48 + Math.random() * 0.12; // humanización de velocidad
+              const humanT = time + swingOffset + Math.random() * 0.012; // micro-timing humano
+              rhodes.triggerAttackRelease(voicing, "2n.", humanT, vel);
+            }
 
-    // ── ACORDES (piano) — en beats pares del compás ──
-    if (!isOdd && beatLocal === 0) {
-      const voicing = CHORD[chord.type].map((interval, vi) => {
-        const oct = 4 + Math.floor(vi / 3);
-        return CHROMATIC[((chord.midi + interval) % 12 + 12) % 12] + oct;
+            // ── NOTA EXTRA de piano en el 3er beat (relleno) ──
+            if (!isOdd && beatLocal === 2 && Math.random() < 0.55) {
+              const note =
+                CHROMATIC[
+                  (((chord.midi +
+                    PENTA_MINOR[
+                      Math.floor(Math.random() * PENTA_MINOR.length)
+                    ]) %
+                    12) +
+                    12) %
+                    12
+                ] + "4";
+              rhodes.triggerAttackRelease(
+                note,
+                "8n",
+                time + swingOffset,
+                0.28 + Math.random() * 0.12,
+              );
+            }
+
+            // ── MELODÍA — frases pregunta/respuesta ──
+            const melStep = step % (beatsPerChord * 2);
+            const melNote = melPhrases[chordIdx][melStep];
+            if (melNote) {
+              const vel = 0.22 + Math.random() * 0.18;
+              melSynth.triggerAttackRelease(
+                melNote,
+                "8n",
+                time + swingOffset,
+                vel,
+              );
+            }
+
+            // ── BAJO — raíz del acorde en el 1er beat ──
+            if (!isOdd && beatLocal === 0) {
+              const bassNote = CHROMATIC[((chord.midi % 12) + 12) % 12] + "2";
+              bass.triggerAttackRelease(
+                bassNote,
+                "4n.",
+                time,
+                0.65 + Math.random() * 0.1,
+              );
+            }
+            // bajo de paso en beat 3
+            if (!isOdd && beatLocal === 3 && Math.random() < 0.4) {
+              const bassNote =
+                CHROMATIC[(((chord.midi + 5) % 12) + 12) % 12] + "2";
+              bass.triggerAttackRelease(bassNote, "8n", time, 0.4);
+            }
+
+            // ── KICK — beats 1 y 3, con micro-timing humano ──
+            if (!isOdd && (beatLocal === 0 || beatLocal === 2)) {
+              const humanK = time + Math.random() * 0.008;
+              kick.triggerAttackRelease(
+                "C1",
+                "8n",
+                humanK,
+                0.75 + Math.random() * 0.1,
+              );
+            }
+            // kick extra ocasional en el "and" del 2
+            if (isOdd && beatLocal === 1 && Math.random() < 0.18) {
+              kick.triggerAttackRelease("C1", "8n", time + swingOffset, 0.5);
+            }
+
+            // ── SNARE — beats 2 y 4 ──
+            if (!isOdd && (beatLocal === 1 || beatLocal === 3)) {
+              const humanS = time + swingOffset * 0.3 + Math.random() * 0.01;
+              snare.triggerAttackRelease(
+                "16n",
+                humanS,
+                0.6 + Math.random() * 0.15,
+              );
+            }
+
+            // ── HI-HAT con swing ──
+            const hatTime = time + swingOffset;
+            const hatVel = 0.4 + Math.random() * 0.25;
+            if (beat % 8 === 6 && isOdd) {
+              // hi-hat abierto ocasional
+              openHat.triggerAttackRelease("16n", hatTime, hatVel * 0.8);
+            } else {
+              hihat.triggerAttackRelease("32n", hatTime, hatVel);
+            }
+
+            // ── VISUALIZADOR ──
+            const randomHeights = Array.from({ length: 32 }, () => {
+              const energy = beatLocal === 0 && !isOdd ? 1.5 : 1;
+              return Math.random() < 0.4
+                ? 3
+                : Math.round((4 + Math.random() * 44) * energy);
+            });
+            Tone.getDraw().schedule(() => updateViz(randomHeights), time);
+
+            stepCount++;
+          },
+          Array.from({ length: totalSteps }, (_, i) => i),
+          "8n",
+        );
+
+        // ── DURACIÓN DEL LOOP ────────────────────────────
+        // 2 repeticiones del loop completo (~30 seg a 80 BPM)
+        const secPerBeat = 60 / state.tempo;
+        const loopSec = totalBeats * secPerBeat;
+        const totalDuration = loopSec * 2;
+
+        mainSeq.start(0);
+        Tone.Transport.start();
+        state.playing = true;
+        state.startTime = Date.now();
+
+        document.getElementById("playBtn").textContent = "◼ STOP";
+        document.getElementById("playBtn").disabled = false;
+
+        // timer en pantalla
+        timerInterval = setInterval(() => {
+          const elapsed = (Date.now() - state.startTime) / 1000;
+          const remaining = Math.max(0, totalDuration - elapsed);
+          const mins = Math.floor(remaining / 60);
+          const secs = Math.floor(remaining % 60)
+            .toString()
+            .padStart(2, "0");
+          setStatus("reproduciendo", true, `${mins}:${secs}`);
+        }, 500);
+
+        setTimeout(() => stopAll(), totalDuration * 1000 + 600);
+      }
+
+      // ─────────────────────────────────────────────────────
+      // CONTROLES UI
+      // ─────────────────────────────────────────────────────
+
+      document.getElementById("tempoSlider").addEventListener("input", (e) => {
+        state.tempo = +e.target.value;
+        document.getElementById("tempoVal").textContent = e.target.value;
       });
-      const vel = 0.48 + Math.random() * 0.12; // humanización de velocidad
-      const humanT = time + swingOffset + (Math.random() * 0.012); // micro-timing humano
-      rhodes.triggerAttackRelease(voicing, '2n.', humanT, vel);
-    }
+      document.getElementById("swingSlider").addEventListener("input", (e) => {
+        state.swing = +e.target.value;
+        document.getElementById("swingVal").textContent = e.target.value;
+      });
+      document.getElementById("satSlider").addEventListener("input", (e) => {
+        state.sat = +e.target.value;
+        document.getElementById("satVal").textContent = e.target.value;
+      });
+      document.getElementById("vinylSlider").addEventListener("input", (e) => {
+        state.vinyl = +e.target.value;
+        document.getElementById("vinylVal").textContent = e.target.value;
+      });
+      document.getElementById("reverbSlider").addEventListener("input", (e) => {
+        state.reverb = +e.target.value;
+        document.getElementById("reverbVal").textContent = e.target.value;
+      });
+      document.getElementById("keySelect").addEventListener("change", (e) => {
+        state.key = e.target.value;
+        state.chords = buildChords(state.key, state.progIdx);
+        updateChordDisplay(-1);
+      });
 
-    // ── NOTA EXTRA de piano en el 3er beat (relleno) ──
-    if (!isOdd && beatLocal === 2 && Math.random() < 0.55) {
-      const note = CHROMATIC[((chord.midi + PENTA_MINOR[Math.floor(Math.random()*PENTA_MINOR.length)]) % 12 + 12) % 12] + '4';
-      rhodes.triggerAttackRelease(note, '8n', time + swingOffset, 0.28 + Math.random()*0.12);
-    }
+      document.getElementById("shuffleBtn").addEventListener("click", () => {
+        state.progIdx = Math.floor(Math.random() * PROGRESSIONS.length);
+        state.tempo = 72 + Math.floor(Math.random() * 19);
+        state.swing = 18 + Math.floor(Math.random() * 48);
+        state.sat = 20 + Math.floor(Math.random() * 60);
+        state.vinyl = 10 + Math.floor(Math.random() * 70);
+        state.reverb = 15 + Math.floor(Math.random() * 65);
 
-    // ── MELODÍA — frases pregunta/respuesta ──
-    const melStep = (step % (beatsPerChord * 2));
-    const melNote = melPhrases[chordIdx][melStep];
-    if (melNote) {
-      const vel = 0.22 + Math.random() * 0.18;
-      melSynth.triggerAttackRelease(melNote, '8n', time + swingOffset, vel);
-    }
+        document.getElementById("tempoSlider").value = state.tempo;
+        document.getElementById("tempoVal").textContent = state.tempo;
+        document.getElementById("swingSlider").value = state.swing;
+        document.getElementById("swingVal").textContent = state.swing;
+        document.getElementById("satSlider").value = state.sat;
+        document.getElementById("satVal").textContent = state.sat;
+        document.getElementById("vinylSlider").value = state.vinyl;
+        document.getElementById("vinylVal").textContent = state.vinyl;
+        document.getElementById("reverbSlider").value = state.reverb;
+        document.getElementById("reverbVal").textContent = state.reverb;
 
-    // ── BAJO — raíz del acorde en el 1er beat ──
-    if (!isOdd && beatLocal === 0) {
-      const bassNote = CHROMATIC[((chord.midi) % 12 + 12) % 12] + '2';
-      bass.triggerAttackRelease(bassNote, '4n.', time, 0.65 + Math.random() * 0.1);
-    }
-    // bajo de paso en beat 3
-    if (!isOdd && beatLocal === 3 && Math.random() < 0.4) {
-      const bassNote = CHROMATIC[((chord.midi + 5) % 12 + 12) % 12] + '2';
-      bass.triggerAttackRelease(bassNote, '8n', time, 0.4);
-    }
+        state.chords = buildChords(state.key, state.progIdx);
+        updateChordDisplay(-1);
+      });
 
-    // ── KICK — beats 1 y 3, con micro-timing humano ──
-    if (!isOdd && (beatLocal === 0 || beatLocal === 2)) {
-      const humanK = time + (Math.random() * 0.008);
-      kick.triggerAttackRelease('C1', '8n', humanK, 0.75 + Math.random() * 0.1);
-    }
-    // kick extra ocasional en el "and" del 2
-    if (isOdd && beatLocal === 1 && Math.random() < 0.18) {
-      kick.triggerAttackRelease('C1', '8n', time + swingOffset, 0.5);
-    }
+      document.getElementById("playBtn").addEventListener("click", async () => {
+        if (state.playing) {
+          stopAll();
+          return;
+        }
+        document.getElementById("playBtn").disabled = true;
+        setStatus("iniciando...", false);
+        await startPlay();
+      });
 
-    // ── SNARE — beats 2 y 4 ──
-    if (!isOdd && (beatLocal === 1 || beatLocal === 3)) {
-      const humanS = time + swingOffset * 0.3 + (Math.random() * 0.010);
-      snare.triggerAttackRelease('16n', humanS, 0.6 + Math.random() * 0.15);
-    }
-
-    // ── HI-HAT con swing ──
-    const hatTime = time + swingOffset;
-    const hatVel  = 0.4 + Math.random() * 0.25;
-    if (beat % 8 === 6 && isOdd) {
-      // hi-hat abierto ocasional
-      openHat.triggerAttackRelease('16n', hatTime, hatVel * 0.8);
-    } else {
-      hihat.triggerAttackRelease('32n', hatTime, hatVel);
-    }
-
-    // ── VISUALIZADOR ──
-    const randomHeights = Array.from({length: 32}, () => {
-      const energy = (beatLocal === 0 && !isOdd) ? 1.5 : 1;
-      return Math.random() < 0.4 ? 3 : Math.round((4 + Math.random() * 44) * energy);
-    });
-    Tone.getDraw().schedule(() => updateViz(randomHeights), time);
-
-    stepCount++;
-  }, Array.from({length: totalSteps}, (_, i) => i), '8n');
-
-  // ── DURACIÓN DEL LOOP ────────────────────────────
-  // 2 repeticiones del loop completo (~30 seg a 80 BPM)
-  const secPerBeat    = 60 / state.tempo;
-  const loopSec       = totalBeats * secPerBeat;
-  const totalDuration = loopSec * 2;
-
-  mainSeq.start(0);
-  Tone.Transport.start();
-  state.playing = true;
-  state.startTime = Date.now();
-
-  document.getElementById('playBtn').textContent = '◼ STOP';
-  document.getElementById('playBtn').disabled = false;
-
-  // timer en pantalla
-  timerInterval = setInterval(() => {
-    const elapsed  = (Date.now() - state.startTime) / 1000;
-    const remaining = Math.max(0, totalDuration - elapsed);
-    const mins = Math.floor(remaining / 60);
-    const secs = Math.floor(remaining % 60).toString().padStart(2, '0');
-    setStatus('reproduciendo', true, `${mins}:${secs}`);
-  }, 500);
-
-  setTimeout(() => stopAll(), totalDuration * 1000 + 600);
-}
-
-// ─────────────────────────────────────────────────────
-// CONTROLES UI
-// ─────────────────────────────────────────────────────
-
-document.getElementById('tempoSlider').addEventListener('input', e => {
-  state.tempo = +e.target.value;
-  document.getElementById('tempoVal').textContent = e.target.value;
-});
-document.getElementById('swingSlider').addEventListener('input', e => {
-  state.swing = +e.target.value;
-  document.getElementById('swingVal').textContent = e.target.value;
-});
-document.getElementById('satSlider').addEventListener('input', e => {
-  state.sat = +e.target.value;
-  document.getElementById('satVal').textContent = e.target.value;
-});
-document.getElementById('vinylSlider').addEventListener('input', e => {
-  state.vinyl = +e.target.value;
-  document.getElementById('vinylVal').textContent = e.target.value;
-});
-document.getElementById('reverbSlider').addEventListener('input', e => {
-  state.reverb = +e.target.value;
-  document.getElementById('reverbVal').textContent = e.target.value;
-});
-document.getElementById('keySelect').addEventListener('change', e => {
-  state.key = e.target.value;
-  state.chords = buildChords(state.key, state.progIdx);
-  updateChordDisplay(-1);
-});
-
-document.getElementById('shuffleBtn').addEventListener('click', () => {
-  state.progIdx = Math.floor(Math.random() * PROGRESSIONS.length);
-  state.tempo   = 72 + Math.floor(Math.random() * 19);
-  state.swing   = 18 + Math.floor(Math.random() * 48);
-  state.sat     = 20 + Math.floor(Math.random() * 60);
-  state.vinyl   = 10 + Math.floor(Math.random() * 70);
-  state.reverb  = 15 + Math.floor(Math.random() * 65);
-
-  document.getElementById('tempoSlider').value  = state.tempo;
-  document.getElementById('tempoVal').textContent = state.tempo;
-  document.getElementById('swingSlider').value  = state.swing;
-  document.getElementById('swingVal').textContent = state.swing;
-  document.getElementById('satSlider').value    = state.sat;
-  document.getElementById('satVal').textContent  = state.sat;
-  document.getElementById('vinylSlider').value  = state.vinyl;
-  document.getElementById('vinylVal').textContent = state.vinyl;
-  document.getElementById('reverbSlider').value = state.reverb;
-  document.getElementById('reverbVal').textContent = state.reverb;
-
-  state.chords = buildChords(state.key, state.progIdx);
-  updateChordDisplay(-1);
-});
-
-document.getElementById('playBtn').addEventListener('click', async () => {
-  if (state.playing) { stopAll(); return; }
-  document.getElementById('playBtn').disabled = true;
-  setStatus('iniciando...', false);
-  await startPlay();
-});
-
-// ─────────────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────────────
-initVisualizer();
-state.chords = buildChords(state.key, state.progIdx);
-updateChordDisplay(-1);
-</script>
-</body>
+      // ─────────────────────────────────────────────────────
+      // INIT
+      // ─────────────────────────────────────────────────────
+      initVisualizer();
+      state.chords = buildChords(state.key, state.progIdx);
+      updateChordDisplay(-1);
+    </script>
+  </body>
 </html>
